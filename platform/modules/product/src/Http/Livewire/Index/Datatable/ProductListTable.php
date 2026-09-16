@@ -53,11 +53,12 @@ class ProductListTable extends BaseTable
         $old = Product::findOrFail($id);
         $new = $old->replicate();
         $new->code = $this->makeCopyCode($old->code);
+        $new->qty = 0;
         $new->save();
 
         $branches_id = $old->branches->pluck('id')->toArray();
         $new->branches()->sync($branches_id);
-        $new->branches()->updateExistingPivot($branches_id, ['qty' => $old->qty]);
+        $new->branches()->updateExistingPivot($branches_id, ['qty' => 0]);
 
         $this->dispatch('refresh-datatable-products');
     }
